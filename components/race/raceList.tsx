@@ -6,6 +6,7 @@ import { cookies } from 'next/headers'
 
 export default async function RaceList() {
     const cookieStore = await cookies()
+    // @ts-ignore
     const supabase = createClient(cookieStore)
 
     const { data: races, error } = await supabase

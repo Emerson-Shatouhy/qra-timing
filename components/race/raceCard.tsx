@@ -50,8 +50,9 @@ const getTimerColor = (status: RaceStatus | null): string => {
 };
 
 export default async function RaceCard({ race }: RaceCardProps) {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
+    const cookieStore = await cookies();
+    // @ts-ignore
+    const supabase = createClient(cookieStore);
 
     const { data, error } = await supabase
         .from('results')

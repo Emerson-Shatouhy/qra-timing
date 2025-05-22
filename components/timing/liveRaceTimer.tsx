@@ -64,7 +64,7 @@ export default function LiveRaceTimer({
         const startTimeMs = new Date(startTime).getTime();
 
         // Only consider initial endTime for initialization
-        const isRaceActive = startTime && !endTime && !isPaused.current;
+        const isRaceActive = !!startTime && !endTime && !isPaused.current;
         setIsActive(isRaceActive);
 
         // Function to format elapsed time
