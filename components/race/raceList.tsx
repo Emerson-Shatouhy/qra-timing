@@ -22,6 +22,10 @@ export default async function RaceList() {
     const completedRaces = races?.filter(race =>
         race.race_status === 'unofficial' || race.race_status === 'official') || [];
 
+    const cancelledRaces = races?.filter(race =>
+        race.race_status === 'cancelled') || [];
+
+
     return (
         <div>
             <div className="mb-8">
@@ -29,7 +33,7 @@ export default async function RaceList() {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {activeRaces.length > 0 ? (
                         activeRaces.map(race => (
-                            <RaceCard key={race.id} race={race} />
+                            <RaceCard key={race.id} race={race} teamCount={0} />
                         ))
                     ) : (
                         <p className="text-gray-500">No active races at the moment</p>
@@ -42,7 +46,7 @@ export default async function RaceList() {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {upcomingRaces.length > 0 ? (
                         upcomingRaces.map(race => (
-                            <RaceCard key={race.id} race={race} />
+                            <RaceCard key={race.id} race={race} teamCount={0} />
                         ))
                     ) : (
                         <p className="text-gray-500">No upcoming races scheduled</p>
@@ -55,13 +59,27 @@ export default async function RaceList() {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {completedRaces.length > 0 ? (
                         completedRaces.map(race => (
-                            <RaceCard key={race.id} race={race} />
+                            <RaceCard key={race.id} race={race} teamCount={0} />
                         ))
                     ) : (
                         <p className="text-gray-500">No completed races yet</p>
                     )}
                 </div>
             </div>
+
+            <div>
+                <h2 className="text-2xl font-semibold mb-4">Cancelled Races</h2>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {cancelledRaces.length > 0 ? (
+                        cancelledRaces.map(race => (
+                            <RaceCard key={race.id} race={race} teamCount={0} />
+                        ))
+                    ) : (
+                        <p className="text-gray-500">No completed races yet</p>
+                    )}
+                </div>
+            </div>
+
         </div>
     );
 }

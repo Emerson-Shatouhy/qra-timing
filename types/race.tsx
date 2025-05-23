@@ -21,7 +21,7 @@ export interface results {
     id: number;
     team: Team;
     start_time: string | null;
-    end_time: string | null;
+    finish_time: string | null;
     lane_number: number | null;
 }
 

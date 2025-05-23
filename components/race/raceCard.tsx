@@ -1,13 +1,15 @@
+"use client"
 import { Clock, Users } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
 import { Race, RaceStatus } from "@/types/race";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import RaceStatusBadge from "../badges/raceStatusBadge";
+import { useRouter } from "next/navigation";
+import RaceStatusSetter from "./raceStatusSetter";
 
 interface RaceCardProps {
     race: Race;
+    teamCount: number;
 }
 
 // Helper functions to determine colors based on race status
@@ -49,20 +51,8 @@ const getTimerColor = (status: RaceStatus | null): string => {
     }
 };
 
-export default async function RaceCard({ race }: RaceCardProps) {
-    const cookieStore = await cookies();
-    // @ts-ignore
-    const supabase = createClient(cookieStore);
-
-    const { data, error } = await supabase
-        .from('results')
-        .select('*')
-        .eq('race_id', race.id);
-
-    if (error) {
-        console.error("Error fetching results:", error);
-        return <div>Error</div>;
-    }
+export default function RaceCard({ race, teamCount }: RaceCardProps) {
+    const router = useRouter();
 
     // Format race time or use placeholder
     const raceTime = race.race_actual_end_time ?
@@ -74,15 +64,16 @@ export default async function RaceCard({ race }: RaceCardProps) {
         new Date(race.race_scheduled_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) :
         "TBD";
 
-    const teamCount = data ? data.length : 0;
-
     return (
-        <Link href={`/race/${race.id}`} className="no-underline">
+        <Link href={`/race/${race.id}`} className="no-underline" onClick={(e) => e.stopPropagation()}>
             <Card className={`border-l-4 ${getBorderColor(race.race_status)}`}>
                 <CardHeader className="pb-2">
                     <div className="flex justify-between items-center">
                         <CardTitle>{race.category.category_name}</CardTitle>
-                        <RaceStatusBadge status={race.race_status} />
+                        <div className="flex flex-row items-center space-x-2">
+                            <RaceStatusBadge status={race.race_status} />
+                            <RaceStatusSetter race={race} />
+                        </div>
                     </div>
                     <CardDescription>{race.race_name}</CardDescription>
                 </CardHeader>

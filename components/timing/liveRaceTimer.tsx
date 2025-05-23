@@ -7,12 +7,14 @@ interface LiveRaceTimerProps {
     endTime?: string | null;
     showIcon?: boolean;
     className?: string;
+    raceId?: string | null;
 }
 
 export default function LiveRaceTimer({
     startTime,
     endTime = null,
     showIcon = true,
+    raceId = null,
     className = "",
 }: LiveRaceTimerProps) {
     const [elapsedTime, setElapsedTime] = useState<string>("--:--.--");
@@ -28,6 +30,7 @@ export default function LiveRaceTimer({
                 event: 'UPDATE',
                 schema: 'public',
                 table: 'races',
+                filter: `id=eq.${raceId}`,
             },
             (payload) => {
                 const { new: newRace } = payload;
@@ -41,13 +44,13 @@ export default function LiveRaceTimer({
                     console.log("RACE STARTED")
                     isPaused.current = false;
                     setIsActive(true);
+                    endTime = null; // Reset endTime to null
                 }
             }
         )
         .subscribe()
 
     useEffect(() => {
-        // Cleanup function to unsubscribe from the channel
         return () => {
             supabase.channel('changes').unsubscribe();
         };
@@ -93,6 +96,7 @@ export default function LiveRaceTimer({
                     const now = Date.now();
                     const elapsed = now - startTimeMs;
                     setElapsedTime(formatTime(elapsed));
+                    console.log("Elapsed Time: ", formatTime(elapsed));
                 }
             };
 
@@ -108,11 +112,18 @@ export default function LiveRaceTimer({
         <div className={`flex items-center ${className}`}>
             {showIcon && (
                 <Clock
-                    className={`mr-3 h-5 w-5 ${isActive ? "text-red-600" : "text-green-600"}`}
+                    className={`mr-3 h-5 w-5 ${isActive
+                        ? "text-red-600 animate-pulse"
+                        : "text-green-600"
+                        }`}
+                    strokeWidth={isActive ? 2.5 : 2}
                 />
             )}
             <span
-                className={`font-mono tabular-nums ${isActive ? "text-red-600" : "text-green-600"}`}
+                className={`font-mono tabular-nums ${isActive
+                    ? "text-red-600 animate-[blink_1.5s_ease-in-out_infinite]"
+                    : "text-green-600"
+                    }`}
             >
                 {elapsedTime}
             </span>
